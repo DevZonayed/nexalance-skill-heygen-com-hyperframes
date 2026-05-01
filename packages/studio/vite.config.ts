@@ -48,6 +48,13 @@ async function getSharedBrowser(): Promise<import("puppeteer-core").Browser | nu
 const _thumbnailInflight = new Map<string, Promise<Buffer>>();
 const THUMBNAIL_CACHE_VERSION = "v2";
 
+interface ScreenshotClip {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 // ── Vite adapter for the shared studio API ───────────────────────────────────
 
 function createViteAdapter(dataDir: string, server: ViteDevServer): StudioApiAdapter {
@@ -287,7 +294,7 @@ function createViteAdapter(dataDir: string, server: ViteDevServer): StudioApiAda
           }, opts.seekTime);
           await page.evaluate("document.fonts?.ready");
           await new Promise((r) => setTimeout(r, 200));
-          let clip: { x: number; y: number; width: number; height: number } | undefined;
+          let clip: ScreenshotClip | undefined;
           if (opts.selector) {
             clip = await page.evaluate((selector: string) => {
               const el = document.querySelector(selector);

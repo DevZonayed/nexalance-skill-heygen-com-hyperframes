@@ -1336,8 +1336,8 @@ export function initSandboxRuntimeModular(): void {
           }
         }
 
-        // Composition hosts must respect both the authored clip window in the parent
-        // composition and the child composition's own live timeline duration.
+        // Composition hosts must respect both the authored parent clip window
+        // and the child composition's own live timeline duration.
         if (duration != null && duration > 0 && liveDuration != null) {
           duration = Math.min(duration, liveDuration);
         } else if ((duration == null || duration <= 0) && liveDuration != null) {
