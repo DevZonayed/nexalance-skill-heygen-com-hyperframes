@@ -21,6 +21,7 @@ import {
   resolveRenderWorkerCount,
   selectCaptureCalibrationFrames,
   shouldFallbackToScreenshotAfterCalibrationError,
+  shouldUseStreamingEncode,
   writeCompiledArtifacts,
 } from "./renderOrchestrator.js";
 import { toExternalAssetKey } from "../utils/paths.js";
@@ -81,6 +82,46 @@ describe("extractStandaloneEntryFromIndex", () => {
     const extracted = extractStandaloneEntryFromIndex(indexHtml, "compositions/outro.html");
 
     expect(extracted).toBeNull();
+  });
+});
+
+describe("shouldUseStreamingEncode", () => {
+  const streamingEnabledConfig = {
+    enableStreamingEncode: true,
+    streamingEncodeMaxDurationSeconds: 240,
+  };
+
+  it("enables streaming for default single-worker video renders", () => {
+    expect(shouldUseStreamingEncode(streamingEnabledConfig, "mp4", 1, 240)).toBe(true);
+  });
+
+  it("lets config disable streaming encode", () => {
+    expect(
+      shouldUseStreamingEncode(
+        { enableStreamingEncode: false, streamingEncodeMaxDurationSeconds: 240 },
+        "mp4",
+        1,
+        240,
+      ),
+    ).toBe(false);
+  });
+
+  it("keeps png-sequence and parallel capture on the non-streaming path", () => {
+    expect(shouldUseStreamingEncode(streamingEnabledConfig, "png-sequence", 1, 240)).toBe(false);
+    expect(shouldUseStreamingEncode(streamingEnabledConfig, "mp4", 2, 240)).toBe(false);
+  });
+
+  it("keeps renders over the configured max duration on normal encoding", () => {
+    expect(shouldUseStreamingEncode(streamingEnabledConfig, "mp4", 1, 240)).toBe(true);
+    expect(shouldUseStreamingEncode(streamingEnabledConfig, "mp4", 1, 240.001)).toBe(false);
+    expect(
+      shouldUseStreamingEncode(
+        { enableStreamingEncode: true, streamingEncodeMaxDurationSeconds: 120 },
+        "mp4",
+        1,
+        120.001,
+      ),
+    ).toBe(false);
   });
 });
 
@@ -216,9 +257,12 @@ function createConfig(): EngineConfig {
     enableChunkedEncode: false,
     chunkSizeFrames: 360,
     enableStreamingEncode: false,
+    streamingEncodeMaxDurationSeconds: 240,
     ffmpegEncodeTimeout: 600000,
     ffmpegProcessTimeout: 300000,
     ffmpegStreamingTimeout: 600000,
+    hdr: false,
+    hdrAutoDetect: true,
     audioGain: 1,
     frameDataUriCacheLimit: 256,
     playerReadyTimeout: 45000,
