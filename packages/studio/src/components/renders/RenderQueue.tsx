@@ -26,12 +26,18 @@ interface RenderQueueProps {
   compositionDimensions?: CompositionDimensions | null;
 }
 
-// User-facing render scale. Orientation is derived from the composition's
-// authored aspect ratio at render time, so the user never picks an
-// orientation that mismatches their comp.
+// Orientation is derived from the composition's authored aspect ratio,
+// not chosen by the user — picking "1080p portrait" for a landscape comp
+// would just produce a wrong-aspect render.
 type RenderScale = "auto" | "1080p" | "4k";
 
 const SCALE_OPTION_ORDER: RenderScale[] = ["auto", "1080p", "4k"];
+
+const SCALE_LABEL: Record<RenderScale, string> = {
+  auto: "Auto",
+  "1080p": "1080p",
+  "4k": "4K",
+};
 
 function isPortraitComp(dims: CompositionDimensions | null | undefined): boolean {
   // Squares and missing dims fall through to landscape — matches the legacy
@@ -50,15 +56,6 @@ function resolveResolution(
   return portrait ? "portrait-4k" : "landscape-4k";
 }
 
-function scaleLabel(scale: RenderScale): string {
-  if (scale === "auto") return "Auto";
-  if (scale === "1080p") return "1080p";
-  return "4K";
-}
-
-// Resolved output dimensions for a given scale + composition. Mirrors
-// `CANVAS_DIMENSIONS` in core for the 1080p / 4K presets; `auto` echoes the
-// composition's authored dims so the user can see exactly what they'll get.
 function resolvedDimensions(
   scale: RenderScale,
   dims: CompositionDimensions | null | undefined,
@@ -71,17 +68,14 @@ function resolvedDimensions(
   return portrait ? { width: 2160, height: 3840 } : { width: 3840, height: 2160 };
 }
 
-function formatDims(dims: CompositionDimensions | null): string {
-  if (!dims) return "?";
-  return `${dims.width}×${dims.height}`;
-}
-
 function scaleOptionLabel(
   scale: RenderScale,
   dims: CompositionDimensions | null | undefined,
 ): string {
   const resolved = resolvedDimensions(scale, dims);
-  return resolved ? `${scaleLabel(scale)} · ${formatDims(resolved)}` : scaleLabel(scale);
+  return resolved
+    ? `${SCALE_LABEL[scale]} · ${resolved.width}×${resolved.height}`
+    : SCALE_LABEL[scale];
 }
 
 const FORMAT_INFO: Record<"mp4" | "webm" | "mov", { label: string; desc: string }> = {
