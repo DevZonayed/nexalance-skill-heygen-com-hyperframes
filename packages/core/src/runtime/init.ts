@@ -7,6 +7,7 @@ import { createLottieAdapter } from "./adapters/lottie";
 import { createThreeAdapter } from "./adapters/three";
 import { createWaapiAdapter } from "./adapters/waapi";
 import { refreshRuntimeMediaCache, syncRuntimeMedia } from "./media";
+import { createMediaPreloadManager } from "./mediaPreloader";
 import { createPickerModule } from "./picker";
 import { createRuntimePlayer } from "./player";
 import { createRuntimeState } from "./state";
