@@ -1252,10 +1252,18 @@ export function initSandboxRuntimeModular(): void {
         }
       }
     } else {
+      // Only demote timed media (elements with data-start) to metadata preload.
+      // Untimed media (background audio, ambient loops, decorative video) must
+      // keep their original preload state — the mediaPreloader only manages
+      // timed clips and would never promote them back.
       for (const mediaEl of mediaEls) {
         if (!mediaEl.hasAttribute("data-start")) continue;
         if (mediaEl.preload === "auto" || mediaEl.preload === "") {
           mediaEl.preload = "metadata";
+          // Kick off the metadata fetch explicitly — some browsers (Chrome Lite
+          // mode, Firefox with media.preload.default=0) won't fetch metadata
+          // until load() is called, and timeline duration depends on el.duration.
+          mediaEl.load();
         }
         if (mediaEl.readyState < HTMLMediaElement.HAVE_METADATA) {
           mediaEl.load();

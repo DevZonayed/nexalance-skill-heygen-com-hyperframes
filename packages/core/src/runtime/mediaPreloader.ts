@@ -3,6 +3,7 @@ import { refreshRuntimeMediaCache, type RuntimeMediaClip } from "./media";
 const LAZY_THRESHOLD = 6;
 const LOOKAHEAD_SECONDS = 10;
 const LOOKAHEAD_MIN_CLIPS = 2;
+const MAX_PROMOTED = 5;
 
 export interface MediaPreloadManager {
   refresh(): void;
@@ -17,7 +18,11 @@ export function createMediaPreloadManager(options?: {
   shouldIncludeElement?: (element: HTMLVideoElement | HTMLAudioElement) => boolean;
 }): MediaPreloadManager {
   let clips: RuntimeMediaClip[] = [];
-  const promoted = new WeakSet<HTMLMediaElement>();
+  const promoted = new Set<HTMLMediaElement>();
+  /** Insertion-order queue for LRU eviction (oldest first). */
+  const promotionOrder: HTMLMediaElement[] = [];
+  /** Stashed original src so we can restore after eviction. */
+  const originalSrc = new Map<HTMLMediaElement, string>();
   let lazy = false;
 
   function refresh(): void {
@@ -26,14 +31,68 @@ export function createMediaPreloadManager(options?: {
     lazy = clips.length >= LAZY_THRESHOLD;
   }
 
+  function evictClip(clip: RuntimeMediaClip): void {
+    if (!promoted.has(clip.el)) return;
+    // Stash original src before clearing
+    if (!originalSrc.has(clip.el)) {
+      originalSrc.set(clip.el, clip.el.src);
+    }
+    // Release buffered data: only way to free memory per MDN
+    clip.el.removeAttribute("src");
+    clip.el.load();
+    clip.el.preload = "metadata";
+    promoted.delete(clip.el);
+    const idx = promotionOrder.indexOf(clip.el);
+    if (idx !== -1) promotionOrder.splice(idx, 1);
+  }
+
   function promoteClip(clip: RuntimeMediaClip): void {
     if (promoted.has(clip.el)) return;
+
+    // Restore src if previously evicted
+    const stashedSrc = originalSrc.get(clip.el);
+    if (stashedSrc !== undefined && !clip.el.src) {
+      clip.el.src = stashedSrc;
+      originalSrc.delete(clip.el);
+    }
+
     promoted.add(clip.el);
+    promotionOrder.push(clip.el);
+
     if (clip.el.preload !== "auto") {
       clip.el.preload = "auto";
     }
     if (clip.el.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) {
       clip.el.load();
+    }
+  }
+
+  function evictOutsideWindow(inWindow: Set<RuntimeMediaClip>): void {
+    const windowEls = new Set<HTMLMediaElement>();
+    for (const clip of inWindow) {
+      windowEls.add(clip.el);
+    }
+
+    // Evict clips no longer in window, oldest first
+    for (const clip of clips) {
+      if (promoted.has(clip.el) && !windowEls.has(clip.el)) {
+        evictClip(clip);
+      }
+    }
+
+    // If still over budget after removing out-of-window clips,
+    // evict the oldest promoted that isn't in the current window
+    while (promotionOrder.length > MAX_PROMOTED) {
+      const oldest = promotionOrder[0];
+      if (windowEls.has(oldest)) break; // don't evict something currently needed
+      const clip = clips.find((c) => c.el === oldest);
+      if (clip) {
+        evictClip(clip);
+      } else {
+        // Element no longer in clips list, just remove from tracking
+        promoted.delete(oldest);
+        promotionOrder.shift();
+      }
     }
   }
 
@@ -62,9 +121,9 @@ export function createMediaPreloadManager(options?: {
     return inWindow;
   }
 
-  function sync(currentTimeSeconds: number): void {
-    if (!lazy) return;
-    const window = getClipsInWindow(currentTimeSeconds);
+  function syncWindow(timeSeconds: number): void {
+    const window = getClipsInWindow(timeSeconds);
+    evictOutsideWindow(window);
     for (const clip of clips) {
       if (window.has(clip)) {
         promoteClip(clip);
@@ -72,14 +131,14 @@ export function createMediaPreloadManager(options?: {
     }
   }
 
+  function sync(currentTimeSeconds: number): void {
+    if (!lazy) return;
+    syncWindow(currentTimeSeconds);
+  }
+
   function preloadAroundTime(timeSeconds: number): void {
     if (!lazy) return;
-    const window = getClipsInWindow(timeSeconds);
-    for (const clip of clips) {
-      if (window.has(clip)) {
-        promoteClip(clip);
-      }
-    }
+    syncWindow(timeSeconds);
   }
 
   function isLazy(): boolean {
