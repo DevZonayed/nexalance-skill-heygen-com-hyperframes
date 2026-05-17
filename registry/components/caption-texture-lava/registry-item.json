@@ -10,6 +10,11 @@
       "path": "caption-texture-lava.html",
       "target": "compositions/components/caption-texture-lava.html",
       "type": "hyperframes:snippet"
+    },
+    {
+      "path": "lava.png",
+      "target": "compositions/components/lava.png",
+      "type": "hyperframes:asset"
     }
   ],
   "preview": "https://static.heygen.ai/hyperframes-oss/registry/components/caption-texture-lava/preview.mp4?v=1779051416"
