@@ -6,7 +6,10 @@
     <title>Neon Accent</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
       *,
@@ -154,44 +157,94 @@
       var PRIMARY_COLOR = "#FFFFFF";
       var ACCENT_COLORS = ["#53FF01", "#FF0002", "#FCFF00"];
       var TRANSITION_WORDS = new Set([
-        "the", "a", "an", "and", "or", "but", "is", "are", "was", "were",
-        "to", "of", "in", "on", "at", "for", "with", "by", "from", "as",
-        "it", "its", "this", "that", "these", "those", "be", "been",
-        "have", "has", "had", "do", "does", "did", "will", "would", "could",
-        "should", "may", "might", "must", "can", "if", "then", "so", "just",
-        "not", "no", "yes", "up", "out", "about", "lets", "you", "write", "render"
+        "the",
+        "a",
+        "an",
+        "and",
+        "or",
+        "but",
+        "is",
+        "are",
+        "was",
+        "were",
+        "to",
+        "of",
+        "in",
+        "on",
+        "at",
+        "for",
+        "with",
+        "by",
+        "from",
+        "as",
+        "it",
+        "its",
+        "this",
+        "that",
+        "these",
+        "those",
+        "be",
+        "been",
+        "have",
+        "has",
+        "had",
+        "do",
+        "does",
+        "did",
+        "will",
+        "would",
+        "could",
+        "should",
+        "may",
+        "might",
+        "must",
+        "can",
+        "if",
+        "then",
+        "so",
+        "just",
+        "not",
+        "no",
+        "yes",
+        "up",
+        "out",
+        "about",
+        "lets",
+        "you",
+        "write",
+        "render",
       ]);
       var KEYWORDS = new Set(["hyperframes", "html", "professional", "code", "cinema"]);
 
       var TRANSCRIPT = [
-        {"text": "Every", "start": 0.0, "end": 0.3},
-        {"text": "great", "start": 0.3, "end": 0.55},
-        {"text": "video", "start": 0.55, "end": 0.85},
-        {"text": "starts", "start": 0.85, "end": 1.1},
-        {"text": "with", "start": 1.1, "end": 1.25},
-        {"text": "a", "start": 1.25, "end": 1.35},
-        {"text": "single", "start": 1.35, "end": 1.65},
-        {"text": "frame.", "start": 1.65, "end": 2.0},
-        {"text": "HyperFrames", "start": 2.1, "end": 2.65},
-        {"text": "lets", "start": 2.65, "end": 2.85},
-        {"text": "you", "start": 2.85, "end": 2.95},
-        {"text": "write", "start": 2.95, "end": 3.15},
-        {"text": "HTML", "start": 3.15, "end": 3.55},
-        {"text": "and", "start": 3.55, "end": 3.65},
-        {"text": "render", "start": 3.65, "end": 3.95},
-        {"text": "professional", "start": 3.95, "end": 4.45},
-        {"text": "video.", "start": 4.45, "end": 4.8},
-        {"text": "No", "start": 4.9, "end": 5.05},
-        {"text": "timeline.", "start": 5.05, "end": 5.45},
-        {"text": "No", "start": 5.5, "end": 5.65},
-        {"text": "drag", "start": 5.65, "end": 5.85},
-        {"text": "and", "start": 5.85, "end": 5.95},
-        {"text": "drop.", "start": 5.95, "end": 6.25},
-        {"text": "Just", "start": 6.35, "end": 6.55},
-        {"text": "code", "start": 6.55, "end": 6.8},
-        {"text": "that", "start": 6.8, "end": 6.95},
-        {"text": "becomes", "start": 6.95, "end": 7.3},
-        {"text": "cinema.", "start": 7.3, "end": 7.7}
+        { text: "Every", start: 0.0, end: 0.3 },
+        { text: "great", start: 0.3, end: 0.55 },
+        { text: "video", start: 0.55, end: 0.85 },
+        { text: "starts", start: 0.85, end: 1.1 },
+        { text: "with", start: 1.1, end: 1.25 },
+        { text: "a", start: 1.25, end: 1.35 },
+        { text: "single", start: 1.35, end: 1.65 },
+        { text: "frame.", start: 1.65, end: 2.0 },
+        { text: "HyperFrames", start: 2.1, end: 2.65 },
+        { text: "lets", start: 2.65, end: 2.85 },
+        { text: "you", start: 2.85, end: 2.95 },
+        { text: "write", start: 2.95, end: 3.15 },
+        { text: "HTML", start: 3.15, end: 3.55 },
+        { text: "and", start: 3.55, end: 3.65 },
+        { text: "render", start: 3.65, end: 3.95 },
+        { text: "professional", start: 3.95, end: 4.45 },
+        { text: "video.", start: 4.45, end: 4.8 },
+        { text: "No", start: 4.9, end: 5.05 },
+        { text: "timeline.", start: 5.05, end: 5.45 },
+        { text: "No", start: 5.5, end: 5.65 },
+        { text: "drag", start: 5.65, end: 5.85 },
+        { text: "and", start: 5.85, end: 5.95 },
+        { text: "drop.", start: 5.95, end: 6.25 },
+        { text: "Just", start: 6.35, end: 6.55 },
+        { text: "code", start: 6.55, end: 6.8 },
+        { text: "that", start: 6.8, end: 6.95 },
+        { text: "becomes", start: 6.95, end: 7.3 },
+        { text: "cinema.", start: 7.3, end: 7.7 },
       ];
 
       gsap.registerPlugin && gsap.registerPlugin();
@@ -201,13 +254,17 @@
       }
 
       function normalizeWords(rawWords) {
-        return rawWords.map(function (item) {
-          return {
-            text: cleanText(item.word || item.text),
-            start: Math.max(0, Number(item.start) || 0),
-            end: Math.min(DURATION, Math.max(Number(item.start) || 0, Number(item.end) || 0)),
-          };
-        }).filter(function (word) { return word.text.length > 0; });
+        return rawWords
+          .map(function (item) {
+            return {
+              text: cleanText(item.word || item.text),
+              start: Math.max(0, Number(item.start) || 0),
+              end: Math.min(DURATION, Math.max(Number(item.start) || 0, Number(item.end) || 0)),
+            };
+          })
+          .filter(function (word) {
+            return word.text.length > 0;
+          });
       }
 
       var measureCanvas = document.createElement("canvas");
@@ -247,24 +304,42 @@
 
       function measureLineWidth(words, colors, fontSize) {
         return words.reduce(function (total, word, index) {
-          return total + measureWord(word, colors[index] || PRIMARY_COLOR, fontSize) + (index ? WORD_SPACING : 0);
+          return (
+            total +
+            measureWord(word, colors[index] || PRIMARY_COLOR, fontSize) +
+            (index ? WORD_SPACING : 0)
+          );
         }, 0);
       }
 
       function splitLinesForGroup(words, colors, fontSize) {
         var maxLineWidth = SAFE_ZONE_WIDTH;
-        if (words.some(function (word, i) { return measureWord(word, colors[i] || PRIMARY_COLOR, fontSize) > maxLineWidth; })) return null;
-        if (measureLineWidth(words, colors, fontSize) <= maxLineWidth) return [{ words: words, colors: colors }];
+        if (
+          words.some(function (word, i) {
+            return measureWord(word, colors[i] || PRIMARY_COLOR, fontSize) > maxLineWidth;
+          })
+        )
+          return null;
+        if (measureLineWidth(words, colors, fontSize) <= maxLineWidth)
+          return [{ words: words, colors: colors }];
         var best = null;
         var bestDiff = Infinity;
         for (var split = 1; split < words.length; split++) {
-          var fw = words.slice(0, split), sw = words.slice(split);
-          var fc = colors.slice(0, split), sc = colors.slice(split);
+          var fw = words.slice(0, split),
+            sw = words.slice(split);
+          var fc = colors.slice(0, split),
+            sc = colors.slice(split);
           var fW = measureLineWidth(fw, fc, fontSize);
           var sW = measureLineWidth(sw, sc, fontSize);
           if (fW <= maxLineWidth && sW <= maxLineWidth) {
             var diff = Math.abs(fW - sW);
-            if (diff < bestDiff) { best = [{ words: fw, colors: fc }, { words: sw, colors: sc }]; bestDiff = diff; }
+            if (diff < bestDiff) {
+              best = [
+                { words: fw, colors: fc },
+                { words: sw, colors: sc },
+              ];
+              bestDiff = diff;
+            }
           }
         }
         return best;
@@ -287,7 +362,12 @@
           current.push(word);
           var punctuation = /[,.:!?]$/.test(word.text);
           var pause = nextWord ? nextWord.start - word.end : 0;
-          if (!nextWord || punctuation || pause >= PAUSE_THRESHOLD || current.length >= MAX_WORDS_PER_GROUP) {
+          if (
+            !nextWord ||
+            punctuation ||
+            pause >= PAUSE_THRESHOLD ||
+            current.length >= MAX_WORDS_PER_GROUP
+          ) {
             groups.push(makeGroup(current, groups.length));
             current = [];
           }
@@ -299,11 +379,16 @@
       function makeGroup(words, groupIndex) {
         var colors = assignWordColors(words, groupIndex);
         var fontSize = BASE_FONT_SIZE;
-        while (fontSize > MIN_FONT_SIZE && !splitLinesForGroup(words, colors, fontSize)) { fontSize -= 2; }
+        while (fontSize > MIN_FONT_SIZE && !splitLinesForGroup(words, colors, fontSize)) {
+          fontSize -= 2;
+        }
         return {
-          words: words.slice(), colors: colors, fontSize: fontSize,
+          words: words.slice(),
+          colors: colors,
+          fontSize: fontSize,
           lines: splitLinesForGroup(words, colors, fontSize) || [{ words: words, colors: colors }],
-          start: words[0].start, end: words[words.length - 1].end,
+          start: words[0].start,
+          end: words[words.length - 1].end,
         };
       }
 
@@ -312,7 +397,32 @@
         var r = parseInt(hex.slice(0, 2), 16);
         var g = parseInt(hex.slice(2, 4), 16);
         var b = parseInt(hex.slice(4, 6), 16);
-        var glow = "0 0 4px rgba(" + r + "," + g + "," + b + ",1), 0 0 10px rgba(" + r + "," + g + "," + b + ",0.9), 0 0 20px rgba(" + r + "," + g + "," + b + ",0.7), 0 0 40px rgba(" + r + "," + g + "," + b + ",0.4)";
+        var glow =
+          "0 0 4px rgba(" +
+          r +
+          "," +
+          g +
+          "," +
+          b +
+          ",1), 0 0 10px rgba(" +
+          r +
+          "," +
+          g +
+          "," +
+          b +
+          ",0.9), 0 0 20px rgba(" +
+          r +
+          "," +
+          g +
+          "," +
+          b +
+          ",0.7), 0 0 40px rgba(" +
+          r +
+          "," +
+          g +
+          "," +
+          b +
+          ",0.4)";
         return "0 8px 16px rgba(0,0,0,0.8), 0 16px 40px rgba(0,0,0,0.6), " + glow;
       }
 
@@ -333,7 +443,8 @@
               wordEl.className = color === PRIMARY_COLOR ? "caption-word" : "caption-word accent";
               wordEl.textContent = word.text.toUpperCase();
               wordEl.style.color = color;
-              wordEl.style.fontSize = color === PRIMARY_COLOR ? group.fontSize + "px" : group.fontSize * 1.2 + "px";
+              wordEl.style.fontSize =
+                color === PRIMARY_COLOR ? group.fontSize + "px" : group.fontSize * 1.2 + "px";
               wordEl.style.textShadow = shadowForColor(color);
               lineEl.appendChild(wordEl);
             });
@@ -358,7 +469,9 @@
         return Math.max(0, group.start - entryLead);
       });
 
-      var allGroupEls = GROUPS.map(function (_, i) { return document.getElementById("caption-group-" + i); });
+      var allGroupEls = GROUPS.map(function (_, i) {
+        return document.getElementById("caption-group-" + i);
+      });
 
       GROUPS.forEach(function (group, groupIndex) {
         var groupEl = allGroupEls[groupIndex];
@@ -373,8 +486,24 @@
         });
 
         tl.set(groupEl, { opacity: 0, scale: 0.65, x: 0, y: 0 }, visibleStart);
-        tl.to(groupEl, { opacity: 1, scale: 1, duration: ENTRY_DURATION, ease: "power3.out", force3D: true }, visibleStart);
-        tl.to(groupEl, { x: D, y: D, duration: WIGGLE_CYCLE / 2, ease: "sine.inOut", yoyo: true, repeat: Math.max(0, wiggleCycles * 2 - 1), force3D: true }, visibleStart);
+        tl.to(
+          groupEl,
+          { opacity: 1, scale: 1, duration: ENTRY_DURATION, ease: "power3.out", force3D: true },
+          visibleStart,
+        );
+        tl.to(
+          groupEl,
+          {
+            x: D,
+            y: D,
+            duration: WIGGLE_CYCLE / 2,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: Math.max(0, wiggleCycles * 2 - 1),
+            force3D: true,
+          },
+          visibleStart,
+        );
         tl.set(groupEl, { opacity: 0 }, visibleEnd);
       });
 

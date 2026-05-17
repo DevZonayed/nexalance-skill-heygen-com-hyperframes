@@ -6,7 +6,10 @@
     <title>Pill Karaoke</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
       *,
@@ -165,45 +168,49 @@
       var WORD_FADE_LEAD = 0.05;
 
       var TRANSCRIPT = [
-        {"text": "Every", "start": 0.0, "end": 0.3},
-        {"text": "great", "start": 0.3, "end": 0.55},
-        {"text": "video", "start": 0.55, "end": 0.85},
-        {"text": "starts", "start": 0.85, "end": 1.1},
-        {"text": "with", "start": 1.1, "end": 1.25},
-        {"text": "a", "start": 1.25, "end": 1.35},
-        {"text": "single", "start": 1.35, "end": 1.65},
-        {"text": "frame.", "start": 1.65, "end": 2.0},
-        {"text": "HyperFrames", "start": 2.1, "end": 2.65},
-        {"text": "lets", "start": 2.65, "end": 2.85},
-        {"text": "you", "start": 2.85, "end": 2.95},
-        {"text": "write", "start": 2.95, "end": 3.15},
-        {"text": "HTML", "start": 3.15, "end": 3.55},
-        {"text": "and", "start": 3.55, "end": 3.65},
-        {"text": "render", "start": 3.65, "end": 3.95},
-        {"text": "professional", "start": 3.95, "end": 4.45},
-        {"text": "video.", "start": 4.45, "end": 4.8},
-        {"text": "No", "start": 4.9, "end": 5.05},
-        {"text": "timeline.", "start": 5.05, "end": 5.45},
-        {"text": "No", "start": 5.5, "end": 5.65},
-        {"text": "drag", "start": 5.65, "end": 5.85},
-        {"text": "and", "start": 5.85, "end": 5.95},
-        {"text": "drop.", "start": 5.95, "end": 6.25},
-        {"text": "Just", "start": 6.35, "end": 6.55},
-        {"text": "code", "start": 6.55, "end": 6.8},
-        {"text": "that", "start": 6.8, "end": 6.95},
-        {"text": "becomes", "start": 6.95, "end": 7.3},
-        {"text": "cinema.", "start": 7.3, "end": 7.7}
+        { text: "Every", start: 0.0, end: 0.3 },
+        { text: "great", start: 0.3, end: 0.55 },
+        { text: "video", start: 0.55, end: 0.85 },
+        { text: "starts", start: 0.85, end: 1.1 },
+        { text: "with", start: 1.1, end: 1.25 },
+        { text: "a", start: 1.25, end: 1.35 },
+        { text: "single", start: 1.35, end: 1.65 },
+        { text: "frame.", start: 1.65, end: 2.0 },
+        { text: "HyperFrames", start: 2.1, end: 2.65 },
+        { text: "lets", start: 2.65, end: 2.85 },
+        { text: "you", start: 2.85, end: 2.95 },
+        { text: "write", start: 2.95, end: 3.15 },
+        { text: "HTML", start: 3.15, end: 3.55 },
+        { text: "and", start: 3.55, end: 3.65 },
+        { text: "render", start: 3.65, end: 3.95 },
+        { text: "professional", start: 3.95, end: 4.45 },
+        { text: "video.", start: 4.45, end: 4.8 },
+        { text: "No", start: 4.9, end: 5.05 },
+        { text: "timeline.", start: 5.05, end: 5.45 },
+        { text: "No", start: 5.5, end: 5.65 },
+        { text: "drag", start: 5.65, end: 5.85 },
+        { text: "and", start: 5.85, end: 5.95 },
+        { text: "drop.", start: 5.95, end: 6.25 },
+        { text: "Just", start: 6.35, end: 6.55 },
+        { text: "code", start: 6.55, end: 6.8 },
+        { text: "that", start: 6.8, end: 6.95 },
+        { text: "becomes", start: 6.95, end: 7.3 },
+        { text: "cinema.", start: 7.3, end: 7.7 },
       ];
 
       function normalizeWords(rawWords) {
-        return rawWords.map(function (item) {
-          var text = String(item.word || item.text || "").trim();
-          return {
-            text: text,
-            start: Math.max(0, Number(item.start) || 0),
-            end: Math.min(DURATION, Math.max(Number(item.start) || 0, Number(item.end) || 0)),
-          };
-        }).filter(function (w) { return w.text.length > 0; });
+        return rawWords
+          .map(function (item) {
+            var text = String(item.word || item.text || "").trim();
+            return {
+              text: text,
+              start: Math.max(0, Number(item.start) || 0),
+              end: Math.min(DURATION, Math.max(Number(item.start) || 0, Number(item.end) || 0)),
+            };
+          })
+          .filter(function (w) {
+            return w.text.length > 0;
+          });
       }
 
       var measureCanvas = document.createElement("canvas");
@@ -216,13 +223,19 @@
 
       function measureLineWidth(words, fontSize) {
         return words.reduce(function (total, word, index) {
-          return total + measureWordWidth(word.text.toLowerCase(), fontSize) + (index ? WORD_SPACING : 0);
+          return (
+            total + measureWordWidth(word.text.toLowerCase(), fontSize) + (index ? WORD_SPACING : 0)
+          );
         }, 0);
       }
 
       function splitLinesForGroup(words, fontSize) {
         var maxLineWidth = PILL_MAX_WIDTH - PILL_MIN_PADDING_X * 2;
-        if (words.some(function (w) { return measureWordWidth(w.text.toLowerCase(), fontSize) > maxLineWidth; })) {
+        if (
+          words.some(function (w) {
+            return measureWordWidth(w.text.toLowerCase(), fontSize) > maxLineWidth;
+          })
+        ) {
           return null;
         }
         if (measureLineWidth(words, fontSize) <= maxLineWidth) return [words];
@@ -269,7 +282,11 @@
           var wouldExceedTwoLines = !fitsInTwoLinesAtSize(testGroup, BASE_FONT_SIZE);
           if (wouldExceedMaxWords || wouldExceedTwoLines) {
             if (current.length) {
-              groups.push({ words: current.slice(), start: current[0].start, end: current[current.length - 1].end });
+              groups.push({
+                words: current.slice(),
+                start: current[0].start,
+                end: current[current.length - 1].end,
+              });
             }
             current = [word];
             return;
@@ -280,17 +297,28 @@
           var hasNaturalPause = pauseDuration >= PAUSE_THRESHOLD;
           var maxWordsReached = current.length >= MAX_WORDS_PER_GROUP;
           if (maxWordsReached || !nextWord || hasPunctuation || hasNaturalPause) {
-            groups.push({ words: current.slice(), start: current[0].start, end: current[current.length - 1].end });
+            groups.push({
+              words: current.slice(),
+              start: current[0].start,
+              end: current[current.length - 1].end,
+            });
             current = [];
           }
         });
-        if (current.length) groups.push({ words: current.slice(), start: current[0].start, end: current[current.length - 1].end });
+        if (current.length)
+          groups.push({
+            words: current.slice(),
+            start: current[0].start,
+            end: current[current.length - 1].end,
+          });
         return groups;
       }
 
       function fontSizeForGroup(words) {
         var size = BASE_FONT_SIZE;
-        while (size > MIN_FONT_SIZE && !fitsInTwoLinesAtSize(words, size)) { size -= 2; }
+        while (size > MIN_FONT_SIZE && !fitsInTwoLinesAtSize(words, size)) {
+          size -= 2;
+        }
         return size;
       }
 
@@ -342,7 +370,9 @@
         var groupEl = document.getElementById("caption-group-" + groupIndex);
         var nextGroup = GROUPS[groupIndex + 1];
         var isLastGroup = groupIndex === GROUPS.length - 1;
-        var effectiveEnd = isLastGroup ? DURATION : Math.min(nextGroup.start, group.end + GROUP_END_BUFFER);
+        var effectiveEnd = isLastGroup
+          ? DURATION
+          : Math.min(nextGroup.start, group.end + GROUP_END_BUFFER);
         var visibleStart = Math.max(0, group.start);
         var visibleEnd = Math.max(visibleStart + 0.01, effectiveEnd);
 
@@ -355,7 +385,11 @@
           var wordStart = Math.max(visibleStart, word.start - WORD_FADE_LEAD);
           tl.set(wordEl, { color: isFirstWord ? COLOR_ACTIVE : COLOR_INACTIVE }, visibleStart);
           if (isFirstWord) return;
-          tl.to(wordEl, { color: COLOR_ACTIVE, duration: COLOR_FADE_DURATION, ease: "none" }, wordStart);
+          tl.to(
+            wordEl,
+            { color: COLOR_ACTIVE, duration: COLOR_FADE_DURATION, ease: "none" },
+            wordStart,
+          );
         });
       });
 

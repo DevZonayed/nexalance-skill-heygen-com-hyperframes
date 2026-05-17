@@ -6,7 +6,10 @@
     <title>Editorial Emphasis</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Playfair+Display:ital,wght@0,800;1,800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Playfair+Display:ital,wght@0,800;1,800&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
       *,
@@ -85,8 +88,10 @@
 
       .word {
         display: inline-block;
-        color: #F5F0D0;
-        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6), 0 4px 24px rgba(0, 0, 0, 0.35);
+        color: #f5f0d0;
+        text-shadow:
+          0 2px 12px rgba(0, 0, 0, 0.6),
+          0 4px 24px rgba(0, 0, 0, 0.35);
         will-change: transform, opacity;
         backface-visibility: hidden;
       }
@@ -111,7 +116,7 @@
         font-weight: 800;
         font-style: italic;
         line-height: 0.9;
-        color: #F5F0D0;
+        color: #f5f0d0;
       }
     </style>
   </head>
@@ -149,49 +154,108 @@
 
       // Generic transcript words
       var W = [
-        {text:"Every",       start:0.0,  end:0.3},
-        {text:"great",       start:0.3,  end:0.55},
-        {text:"video",       start:0.55, end:0.85},
-        {text:"starts",      start:0.85, end:1.1},
-        {text:"with",        start:1.1,  end:1.25},
-        {text:"a",           start:1.25, end:1.35},
-        {text:"single",      start:1.35, end:1.65},
-        {text:"frame.",      start:1.65, end:2.0},
-        {text:"HyperFrames", start:2.1,  end:2.65},
-        {text:"lets",        start:2.65, end:2.85},
-        {text:"you",         start:2.85, end:2.95},
-        {text:"write",       start:2.95, end:3.15},
-        {text:"HTML",        start:3.15, end:3.55},
-        {text:"and",         start:3.55, end:3.65},
-        {text:"render",      start:3.65, end:3.95},
-        {text:"professional",start:3.95, end:4.45},
-        {text:"video.",      start:4.45, end:4.8},
-        {text:"No",          start:4.9,  end:5.05},
-        {text:"timeline.",   start:5.05, end:5.45},
-        {text:"No",          start:5.5,  end:5.65},
-        {text:"drag",        start:5.65, end:5.85},
-        {text:"and",         start:5.85, end:5.95},
-        {text:"drop.",       start:5.95, end:6.25},
-        {text:"Just",        start:6.35, end:6.55},
-        {text:"code",        start:6.55, end:6.8},
-        {text:"that",        start:6.8,  end:6.95},
-        {text:"becomes",     start:6.95, end:7.3},
-        {text:"cinema.",     start:7.3,  end:7.7}
+        { text: "Every", start: 0.0, end: 0.3 },
+        { text: "great", start: 0.3, end: 0.55 },
+        { text: "video", start: 0.55, end: 0.85 },
+        { text: "starts", start: 0.85, end: 1.1 },
+        { text: "with", start: 1.1, end: 1.25 },
+        { text: "a", start: 1.25, end: 1.35 },
+        { text: "single", start: 1.35, end: 1.65 },
+        { text: "frame.", start: 1.65, end: 2.0 },
+        { text: "HyperFrames", start: 2.1, end: 2.65 },
+        { text: "lets", start: 2.65, end: 2.85 },
+        { text: "you", start: 2.85, end: 2.95 },
+        { text: "write", start: 2.95, end: 3.15 },
+        { text: "HTML", start: 3.15, end: 3.55 },
+        { text: "and", start: 3.55, end: 3.65 },
+        { text: "render", start: 3.65, end: 3.95 },
+        { text: "professional", start: 3.95, end: 4.45 },
+        { text: "video.", start: 4.45, end: 4.8 },
+        { text: "No", start: 4.9, end: 5.05 },
+        { text: "timeline.", start: 5.05, end: 5.45 },
+        { text: "No", start: 5.5, end: 5.65 },
+        { text: "drag", start: 5.65, end: 5.85 },
+        { text: "and", start: 5.85, end: 5.95 },
+        { text: "drop.", start: 5.95, end: 6.25 },
+        { text: "Just", start: 6.35, end: 6.55 },
+        { text: "code", start: 6.55, end: 6.8 },
+        { text: "that", start: 6.8, end: 6.95 },
+        { text: "becomes", start: 6.95, end: 7.3 },
+        { text: "cinema.", start: 7.3, end: 7.7 },
       ];
 
       // Block layout: [wordIndex, type] — n=normal, i=italic, e=emphasis(large)
       // Emphasis words: HyperFrames(8), HTML(12), professional(15), code(24), cinema.(27)
       var BLOCKS = [
-        { line1: [[0,"n"],[1,"n"],[2,"n"]],       line2: [[3,"n"],[4,"n"]] },
-        { line1: [[5,"n"],[6,"n"]],               line2: [[7,"e"]] },
-        { line1: [[8,"e"]],                       line2: null },
-        { line1: [[9,"n"],[10,"n"],[11,"n"]],     line2: [[12,"e"]] },
-        { line1: [[13,"n"],[14,"n"]],             line2: [[15,"e"]] },
-        { line1: [[16,"n"],[17,"n"]],             line2: null },
-        { line1: [[18,"n"]],                      line2: [[19,"n"],[20,"n"]] },
-        { line1: [[21,"n"],[22,"n"]],             line2: null },
-        { line1: [[23,"i"],[24,"e"]],             line2: null },
-        { line1: [[25,"n"],[26,"n"]],             line2: [[27,"e"]] },
+        {
+          line1: [
+            [0, "n"],
+            [1, "n"],
+            [2, "n"],
+          ],
+          line2: [
+            [3, "n"],
+            [4, "n"],
+          ],
+        },
+        {
+          line1: [
+            [5, "n"],
+            [6, "n"],
+          ],
+          line2: [[7, "e"]],
+        },
+        { line1: [[8, "e"]], line2: null },
+        {
+          line1: [
+            [9, "n"],
+            [10, "n"],
+            [11, "n"],
+          ],
+          line2: [[12, "e"]],
+        },
+        {
+          line1: [
+            [13, "n"],
+            [14, "n"],
+          ],
+          line2: [[15, "e"]],
+        },
+        {
+          line1: [
+            [16, "n"],
+            [17, "n"],
+          ],
+          line2: null,
+        },
+        {
+          line1: [[18, "n"]],
+          line2: [
+            [19, "n"],
+            [20, "n"],
+          ],
+        },
+        {
+          line1: [
+            [21, "n"],
+            [22, "n"],
+          ],
+          line2: null,
+        },
+        {
+          line1: [
+            [23, "i"],
+            [24, "e"],
+          ],
+          line2: null,
+        },
+        {
+          line1: [
+            [25, "n"],
+            [26, "n"],
+          ],
+          line2: [[27, "e"]],
+        },
       ];
 
       var CLASS_MAP = { n: "word word--normal", i: "word word--italic", e: "word word--emphasis" };
@@ -243,7 +307,9 @@
           el.style.position = "relative";
           var lines = el.querySelectorAll(".caption-line");
           var maxW = 0;
-          lines.forEach(function (line) { if (line.scrollWidth > maxW) maxW = line.scrollWidth; });
+          lines.forEach(function (line) {
+            if (line.scrollWidth > maxW) maxW = line.scrollWidth;
+          });
           if (maxW > SAFE_WIDTH) {
             var s = SAFE_WIDTH / maxW;
             el.style.transform = "scale(" + s + ")";
@@ -256,27 +322,39 @@
       window.__timelines = window.__timelines || {};
       var tl = gsap.timeline({ paused: true });
 
-      var allEls = BLOCKS.map(function (_, i) { return document.getElementById("b" + i); });
+      var allEls = BLOCKS.map(function (_, i) {
+        return document.getElementById("b" + i);
+      });
 
-      function blockStart(bi) { return W[BLOCKS[bi].line1[0][0]].start; }
+      function blockStart(bi) {
+        return W[BLOCKS[bi].line1[0][0]].start;
+      }
 
       BLOCKS.forEach(function (block, bi) {
         var el = allEls[bi];
         var start = blockStart(bi);
         var nextStart = bi < BLOCKS.length - 1 ? blockStart(bi + 1) : DURATION;
 
-        allEls.forEach(function (other, oi) { if (oi !== bi) tl.set(other, { opacity: 0 }, start); });
+        allEls.forEach(function (other, oi) {
+          if (oi !== bi) tl.set(other, { opacity: 0 }, start);
+        });
         tl.set(el, { opacity: 1 }, start);
 
         block.line1.forEach(function (pair, wi) {
           var wordEl = document.getElementById("b" + bi + "L1w" + wi);
           var wordStart = W[pair[0]].start;
           tl.set(wordEl, { opacity: 0, scale: 1.12, transformOrigin: "0% 100%" }, start);
-          tl.to(wordEl, { opacity: 1, scale: 1, duration: ENTRY_DUR, ease: "power2.out" }, wordStart);
+          tl.to(
+            wordEl,
+            { opacity: 1, scale: 1, duration: ENTRY_DUR, ease: "power2.out" },
+            wordStart,
+          );
         });
 
         if (block.line2) {
-          var hasEmphasis = block.line2.some(function (p) { return p[1] === "e"; });
+          var hasEmphasis = block.line2.some(function (p) {
+            return p[1] === "e";
+          });
           var l2El = document.getElementById("b" + bi + "L2");
           if (hasEmphasis) {
             var l2Start = W[block.line2[0][0]].start;
@@ -288,7 +366,11 @@
               var wordEl = document.getElementById("b" + bi + "L2w" + wi);
               var wordStart = W[pair[0]].start;
               tl.set(wordEl, { opacity: 0, scale: 1.12, transformOrigin: "0% 100%" }, start);
-              tl.to(wordEl, { opacity: 1, scale: 1, duration: ENTRY_DUR, ease: "power2.out" }, wordStart);
+              tl.to(
+                wordEl,
+                { opacity: 1, scale: 1, duration: ENTRY_DUR, ease: "power2.out" },
+                wordStart,
+              );
             });
           }
         }

@@ -6,7 +6,10 @@
     <title>Weight Shift</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
       *,
@@ -145,44 +148,48 @@
       var FONT_WEIGHT_BOLD = 700;
 
       var TRANSCRIPT = [
-        {"text": "Every", "start": 0.0, "end": 0.3},
-        {"text": "great", "start": 0.3, "end": 0.55},
-        {"text": "video", "start": 0.55, "end": 0.85},
-        {"text": "starts", "start": 0.85, "end": 1.1},
-        {"text": "with", "start": 1.1, "end": 1.25},
-        {"text": "a", "start": 1.25, "end": 1.35},
-        {"text": "single", "start": 1.35, "end": 1.65},
-        {"text": "frame.", "start": 1.65, "end": 2.0},
-        {"text": "HyperFrames", "start": 2.1, "end": 2.65},
-        {"text": "lets", "start": 2.65, "end": 2.85},
-        {"text": "you", "start": 2.85, "end": 2.95},
-        {"text": "write", "start": 2.95, "end": 3.15},
-        {"text": "HTML", "start": 3.15, "end": 3.55},
-        {"text": "and", "start": 3.55, "end": 3.65},
-        {"text": "render", "start": 3.65, "end": 3.95},
-        {"text": "professional", "start": 3.95, "end": 4.45},
-        {"text": "video.", "start": 4.45, "end": 4.8},
-        {"text": "No", "start": 4.9, "end": 5.05},
-        {"text": "timeline.", "start": 5.05, "end": 5.45},
-        {"text": "No", "start": 5.5, "end": 5.65},
-        {"text": "drag", "start": 5.65, "end": 5.85},
-        {"text": "and", "start": 5.85, "end": 5.95},
-        {"text": "drop.", "start": 5.95, "end": 6.25},
-        {"text": "Just", "start": 6.35, "end": 6.55},
-        {"text": "code", "start": 6.55, "end": 6.8},
-        {"text": "that", "start": 6.8, "end": 6.95},
-        {"text": "becomes", "start": 6.95, "end": 7.3},
-        {"text": "cinema.", "start": 7.3, "end": 7.7}
+        { text: "Every", start: 0.0, end: 0.3 },
+        { text: "great", start: 0.3, end: 0.55 },
+        { text: "video", start: 0.55, end: 0.85 },
+        { text: "starts", start: 0.85, end: 1.1 },
+        { text: "with", start: 1.1, end: 1.25 },
+        { text: "a", start: 1.25, end: 1.35 },
+        { text: "single", start: 1.35, end: 1.65 },
+        { text: "frame.", start: 1.65, end: 2.0 },
+        { text: "HyperFrames", start: 2.1, end: 2.65 },
+        { text: "lets", start: 2.65, end: 2.85 },
+        { text: "you", start: 2.85, end: 2.95 },
+        { text: "write", start: 2.95, end: 3.15 },
+        { text: "HTML", start: 3.15, end: 3.55 },
+        { text: "and", start: 3.55, end: 3.65 },
+        { text: "render", start: 3.65, end: 3.95 },
+        { text: "professional", start: 3.95, end: 4.45 },
+        { text: "video.", start: 4.45, end: 4.8 },
+        { text: "No", start: 4.9, end: 5.05 },
+        { text: "timeline.", start: 5.05, end: 5.45 },
+        { text: "No", start: 5.5, end: 5.65 },
+        { text: "drag", start: 5.65, end: 5.85 },
+        { text: "and", start: 5.85, end: 5.95 },
+        { text: "drop.", start: 5.95, end: 6.25 },
+        { text: "Just", start: 6.35, end: 6.55 },
+        { text: "code", start: 6.55, end: 6.8 },
+        { text: "that", start: 6.8, end: 6.95 },
+        { text: "becomes", start: 6.95, end: 7.3 },
+        { text: "cinema.", start: 7.3, end: 7.7 },
       ];
 
       function normalizeWords(rawWords) {
-        return rawWords.map(function (item) {
-          return {
-            text: String(item.word || item.text || "").trim(),
-            start: Math.max(0, Number(item.start) || 0),
-            end: Math.min(DURATION, Math.max(Number(item.start) || 0, Number(item.end) || 0)),
-          };
-        }).filter(function (word) { return word.text.length > 0; });
+        return rawWords
+          .map(function (item) {
+            return {
+              text: String(item.word || item.text || "").trim(),
+              start: Math.max(0, Number(item.start) || 0),
+              end: Math.min(DURATION, Math.max(Number(item.start) || 0, Number(item.end) || 0)),
+            };
+          })
+          .filter(function (word) {
+            return word.text.length > 0;
+          });
       }
 
       var measureCanvas = document.createElement("canvas");
@@ -214,7 +221,10 @@
           var w2 = measureLineWidth(words.slice(s));
           if (w1 <= MAX_LINE_WIDTH && w2 <= MAX_LINE_WIDTH) {
             var diff = Math.abs(w1 - w2);
-            if (diff < bestDiff) { bestDiff = diff; bestSplit = s; }
+            if (diff < bestDiff) {
+              bestDiff = diff;
+              bestSplit = s;
+            }
           }
         }
         var result = [];
@@ -239,7 +249,12 @@
           current.push(word);
           var punctuation = /[,.:!?]$/.test(word.text);
           var pause = nextWord ? nextWord.start - word.end : 0;
-          if (!nextWord || punctuation || pause >= PAUSE_THRESHOLD || current.length >= MAX_WORDS_PER_GROUP) {
+          if (
+            !nextWord ||
+            punctuation ||
+            pause >= PAUSE_THRESHOLD ||
+            current.length >= MAX_WORDS_PER_GROUP
+          ) {
             groups.push(makeGroup(current));
             current = [];
           }
@@ -249,7 +264,12 @@
       }
 
       function makeGroup(words) {
-        return { words: words.slice(), lines: splitLines(words), start: words[0].start, end: words[words.length - 1].end };
+        return {
+          words: words.slice(),
+          lines: splitLines(words),
+          start: words[0].start,
+          end: words[words.length - 1].end,
+        };
       }
 
       function buildCaptions(groups) {
@@ -291,7 +311,9 @@
         return Math.max(0, group.start - entryLead);
       });
 
-      var allGroupEls = GROUPS.map(function (_, i) { return document.getElementById("caption-group-" + i); });
+      var allGroupEls = GROUPS.map(function (_, i) {
+        return document.getElementById("caption-group-" + i);
+      });
 
       GROUPS.forEach(function (group, groupIndex) {
         var groupEl = allGroupEls[groupIndex];
@@ -303,15 +325,27 @@
         });
 
         tl.set(groupEl, { opacity: 0, scale: 0.85 }, visibleStart);
-        tl.to(groupEl, { opacity: 1, scale: 1, duration: ENTRY_DURATION, ease: "power3.out", force3D: true }, visibleStart);
+        tl.to(
+          groupEl,
+          { opacity: 1, scale: 1, duration: ENTRY_DURATION, ease: "power3.out", force3D: true },
+          visibleStart,
+        );
 
         if (group.lines.length === 2) {
           var line1El = document.getElementById("caption-group-" + groupIndex + "-line-0");
           var line2El = document.getElementById("caption-group-" + groupIndex + "-line-1");
           var line2FirstWord = group.lines[1].words[0];
           var switchTime = line2FirstWord.start;
-          tl.to(line1El, { fontWeight: FONT_WEIGHT_LIGHT, duration: WEIGHT_TRANSITION, ease: "power2.out" }, switchTime);
-          tl.to(line2El, { fontWeight: FONT_WEIGHT_BOLD, duration: WEIGHT_TRANSITION, ease: "power2.out" }, switchTime);
+          tl.to(
+            line1El,
+            { fontWeight: FONT_WEIGHT_LIGHT, duration: WEIGHT_TRANSITION, ease: "power2.out" },
+            switchTime,
+          );
+          tl.to(
+            line2El,
+            { fontWeight: FONT_WEIGHT_BOLD, duration: WEIGHT_TRANSITION, ease: "power2.out" },
+            switchTime,
+          );
         }
 
         tl.set(groupEl, { opacity: 0 }, visibleEnd);
