@@ -198,9 +198,8 @@ export const DEFAULT_MAX_PARALLEL_CHUNKS = 16;
 /**
  * Floor for the auto-sized `chunkSize` when the caller leaves it
  * `undefined`. Anything smaller hits a per-chunk fixed-overhead wall
- * (worker boot + plan download + ffmpeg init) that outweighs the
- * parallelism gain, per the lever-1 chunk-scaling benchmark on
- * 2026-05-17.
+ * (worker boot + plan download + planHash recompute + ffmpeg init) that
+ * outweighs the parallelism gain on tiny renders.
  */
 export const MIN_CHUNK_SIZE = 10;
 /**
@@ -379,11 +378,16 @@ export function resolveChunkPlan(
   // silently truncate.
   assertPositiveInteger("totalFrames", totalFrames);
   assertPositiveInteger("maxParallelChunks", maxParallelChunks);
+  // Validate the caller-supplied value with its real name so the error
+  // message points at the actual bad input. The auto-sized branch is
+  // provably a positive integer (totalFrames and maxParallelChunks are
+  // already validated above, MIN_CHUNK_SIZE is a positive integer
+  // constant), so it doesn't need re-checking.
+  if (configChunkSize !== undefined) {
+    assertPositiveInteger("configChunkSize", configChunkSize);
+  }
   const resolvedChunkSize =
-    configChunkSize !== undefined
-      ? configChunkSize
-      : Math.max(MIN_CHUNK_SIZE, Math.ceil(totalFrames / maxParallelChunks));
-  assertPositiveInteger("configChunkSize", resolvedChunkSize);
+    configChunkSize ?? Math.max(MIN_CHUNK_SIZE, Math.ceil(totalFrames / maxParallelChunks));
   const naiveCount = Math.ceil(totalFrames / resolvedChunkSize);
   const chunkCount = Math.min(maxParallelChunks, Math.max(1, naiveCount));
   const effectiveChunkSize = Math.max(resolvedChunkSize, Math.ceil(totalFrames / chunkCount));
@@ -779,11 +783,6 @@ export async function plan(
   }
 
   // ── Chunking decisions + locked config ──
-  // Pass `config.chunkSize` through verbatim — `resolveChunkPlan` handles
-  // the `undefined` case by auto-sizing from `maxParallelChunks`, so a
-  // caller that bumps `maxParallelChunks` to 16 without setting
-  // `chunkSize` actually gets 16 chunks instead of silently clamping at
-  // the old 240-frame default.
   const maxParallel = config.maxParallelChunks ?? DEFAULT_MAX_PARALLEL_CHUNKS;
   const { chunkCount, effectiveChunkSize } = resolveChunkPlan(
     totalFrames,

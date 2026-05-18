@@ -96,12 +96,9 @@ describe("resolveChunkPlan", () => {
   });
 
   // ── Auto-size when configChunkSize is undefined ───────────────────────
-  // Pre-fix, `plan()` defaulted `chunkSize` to 240 on a `?? DEFAULT_CHUNK_SIZE`
-  // line, so a 660-frame composition with `maxParallelChunks=16` ended up at
-  // 3 chunks (ceil(660/240)) regardless of the caller's fan-out intent.
-  // Surfaced by the lever-1 chunk-scaling benchmark on 2026-05-17. The
-  // auto-sizer now picks `max(MIN_CHUNK_SIZE, ceil(totalFrames /
-  // maxParallelChunks))` whenever the caller leaves `chunkSize` undefined.
+  // The auto-sizer picks `max(MIN_CHUNK_SIZE, ceil(totalFrames /
+  // maxParallelChunks))` whenever the caller leaves `chunkSize` undefined,
+  // honoring `maxParallelChunks` instead of clamping at a 240-frame default.
 
   it("explicit chunkSize wins: 660 frames + chunkSize=240 + maxParallelChunks=16 → 3 chunks", () => {
     // Regression guard for the "explicit number still works" half of the
