@@ -1,4 +1,5 @@
-import { Film, Music } from "../../icons/SystemIcons";
+import { useState } from "react";
+import { Check, ClipboardList, Film, Music } from "../../icons/SystemIcons";
 import type { DomEditSelection } from "./domEditing";
 import {
   formatNumericValue,
@@ -6,14 +7,7 @@ import {
   parseNumericValue,
   RESPONSIVE_GRID,
 } from "./propertyPanelHelpers";
-import {
-  DetailField,
-  MetricField,
-  Section,
-  SegmentedControl,
-  SelectField,
-  SliderControl,
-} from "./propertyPanelPrimitives";
+import { Section, SegmentedControl, SelectField, SliderControl } from "./propertyPanelPrimitives";
 
 const MEDIA_TAGS = new Set(["video", "audio"]);
 
@@ -26,19 +20,15 @@ function formatTimingValue(seconds: number): string {
   return `${seconds.toFixed(2)}s`;
 }
 
-function parseTimingValue(input: string): number | null {
-  const cleaned = input.replace(/s$/i, "").trim();
-  const parsed = Number.parseFloat(cleaned);
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
-}
-
 export function MediaSection({
+  projectDir,
   element,
   styles,
   onSetStyle,
   onSetAttribute,
   onSetHtmlAttribute,
 }: {
+  projectDir: string | null;
   element: DomEditSelection;
   styles: Record<string, string>;
   onSetStyle: (prop: string, value: string) => void | Promise<void>;
@@ -65,8 +55,17 @@ export function MediaSection({
   const objectFit = styles["object-fit"] || "contain";
   const objectPosition = styles["object-position"] || "center";
 
-  const poster = el.getAttribute("poster") ?? "";
-  const src = el.getAttribute("src") ?? "";
+  const sourceDuration =
+    Number.parseFloat(element.dataAttributes["source-duration"] ?? "") ||
+    (el as HTMLMediaElement).duration ||
+    0;
+  const mediaStartMax = Math.max(30, Math.ceil(sourceDuration || mediaStart + 10));
+
+  const srcAttr = el.getAttribute("src") ?? "";
+  const [copied, setCopied] = useState(false);
+
+  const absoluteSrc =
+    projectDir && srcAttr && !srcAttr.startsWith("http") ? `${projectDir}/${srcAttr}` : srcAttr;
 
   return (
     <Section
@@ -74,11 +73,29 @@ export function MediaSection({
       icon={isVideo ? <Film size={15} /> : <Music size={15} />}
     >
       <div className="space-y-4">
-        {src && (
+        {srcAttr && (
           <div className="min-w-0">
-            <div className="text-[10px] uppercase tracking-[0.12em] text-neutral-500">Source</div>
-            <div className="mt-1 truncate text-[11px] font-medium text-neutral-300" title={src}>
-              {src.split("/").pop() || src}
+            <div className="flex items-center justify-between gap-2">
+              <div className="text-[10px] uppercase tracking-[0.12em] text-neutral-500">Source</div>
+              <button
+                type="button"
+                onClick={() => {
+                  void navigator.clipboard.writeText(absoluteSrc).then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                  });
+                }}
+                className="flex h-6 items-center gap-1 rounded-lg border border-neutral-700 bg-neutral-950 px-2 text-[10px] font-medium text-neutral-400 transition-colors hover:border-neutral-600 hover:text-neutral-200"
+              >
+                {copied ? <Check size={11} /> : <ClipboardList size={11} />}
+                <span>{copied ? "Copied" : "Copy"}</span>
+              </button>
+            </div>
+            <div
+              className="mt-1 truncate text-[11px] font-medium text-neutral-300"
+              title={absoluteSrc}
+            >
+              {absoluteSrc}
             </div>
           </div>
         )}
@@ -98,25 +115,35 @@ export function MediaSection({
           />
         </div>
 
-        <MetricField
-          label="Rate"
-          value={formatNumericValue(playbackRate)}
-          onCommit={(next) => {
-            const parsed = Number.parseFloat(next);
-            if (!Number.isFinite(parsed) || parsed < 0.1 || parsed > 5) return;
-            void onSetAttribute("playback-rate", formatNumericValue(parsed));
-          }}
-        />
+        <div className="grid min-w-0 gap-1.5">
+          <span className={LABEL}>Playback rate</span>
+          <SliderControl
+            value={playbackRate * 100}
+            min={25}
+            max={300}
+            step={5}
+            displayValue={`${formatNumericValue(playbackRate)}x`}
+            formatDisplayValue={(next) => `${formatNumericValue(next / 100)}x`}
+            onCommit={(next) => {
+              void onSetAttribute("playback-rate", formatNumericValue(next / 100));
+            }}
+          />
+        </div>
 
-        <MetricField
-          label="Media start"
-          value={formatTimingValue(mediaStart)}
-          onCommit={(next) => {
-            const parsed = parseTimingValue(next);
-            if (parsed == null) return;
-            void onSetAttribute("media-start", parsed.toFixed(2));
-          }}
-        />
+        <div className="grid min-w-0 gap-1.5">
+          <span className={LABEL}>Media start</span>
+          <SliderControl
+            value={Math.round(mediaStart * 100)}
+            min={0}
+            max={mediaStartMax * 100}
+            step={10}
+            displayValue={formatTimingValue(mediaStart)}
+            formatDisplayValue={(next) => formatTimingValue(next / 100)}
+            onCommit={(next) => {
+              void onSetAttribute("media-start", (next / 100).toFixed(2));
+            }}
+          />
+        </div>
 
         <div className={RESPONSIVE_GRID}>
           <div className="grid min-w-0 gap-1.5">
@@ -180,22 +207,25 @@ export function MediaSection({
                 }}
                 options={["contain", "cover", "fill", "none", "scale-down"]}
               />
-              <DetailField
+              <SelectField
                 label="Position"
                 value={objectPosition}
-                onCommit={(next) => {
+                onChange={(next) => {
                   void onSetStyle("object-position", next);
                 }}
+                options={[
+                  "center",
+                  "top",
+                  "bottom",
+                  "left",
+                  "right",
+                  "left top",
+                  "right top",
+                  "left bottom",
+                  "right bottom",
+                ]}
               />
             </div>
-
-            <DetailField
-              label="Poster"
-              value={poster}
-              onCommit={(next) => {
-                void onSetHtmlAttribute("poster", next || null);
-              }}
-            />
           </>
         )}
       </div>
