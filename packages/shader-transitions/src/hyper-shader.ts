@@ -1133,7 +1133,11 @@ export function init(config: HyperShaderConfig): GsapTimeline {
       canvasEl.style.display = "none";
       return;
     }
-    if (cache.fallback) {
+    // CSS-only transitions (prog === null) MUST take the fallback path. The
+    // fallback flag is the normal signal, but we also guard on prog to keep
+    // the invariant even if some path momentarily resets fallback while prog
+    // stays null (it can't be re-created — there is no shader to compile).
+    if (cache.fallback || cache.prog === null) {
       state.active = true;
       state.transitionIndex = activeIndex;
       state.prog = null;
@@ -1147,9 +1151,12 @@ export function init(config: HyperShaderConfig): GsapTimeline {
       return;
     }
 
+    // Narrow cache.prog into a non-null local. The branch above already
+    // returned for prog === null, but TS can't track that across the function.
+    const prog = cache.prog;
     state.active = true;
     state.transitionIndex = activeIndex;
-    state.prog = cache.prog;
+    state.prog = prog;
     state.progress = clampNumber((currentTime - cache.time) / cache.duration, 0, 1);
     markTextureAccess(cache);
 
@@ -1166,7 +1173,7 @@ export function init(config: HyperShaderConfig): GsapTimeline {
     renderShader(
       gl,
       quadBuf,
-      state.prog!, // non-null: fallback path returns before reaching here
+      prog,
       interpolatedFromTex,
       interpolatedToTex,
       state.progress,
@@ -1456,15 +1463,28 @@ export function init(config: HyperShaderConfig): GsapTimeline {
     cache.textureReady = false;
   };
 
+  // Caches with prog === null are CSS crossfade transitions and must stay in
+  // the always-ready fallback state. Without this guard, disposeCachedTransition
+  // + markScenesDirty would route them through the WebGL prewarm path and
+  // tickShader would eventually call renderShader(state.prog!) with a null prog.
+  const isCssOnlyTransition = (cache: CachedTransition): boolean => cache.prog === null;
+
   const disposeCachedTransition = (cache: CachedTransition): void => {
     disposeTransitionTextures(cache);
     cache.texturePromise = null;
     cache.frames = [];
+    cache.lastError = undefined;
+    if (isCssOnlyTransition(cache)) {
+      cache.ready = true;
+      cache.fallback = true;
+      cache.persisted = true;
+      cache.textureReady = false;
+      return;
+    }
     cache.ready = false;
     cache.fallback = false;
     cache.persisted = false;
     cache.textureReady = false;
-    cache.lastError = undefined;
   };
 
   const markTextureAccess = (cache: CachedTransition): void => {
@@ -1571,6 +1591,9 @@ export function init(config: HyperShaderConfig): GsapTimeline {
     let changed = false;
     for (const cache of cachedTransitions) {
       if (!sceneIds.has(cache.fromId) && !sceneIds.has(cache.toId)) continue;
+      // Skip CSS-only transitions: there is no shader to recompile and no
+      // texture pyramid to recapture, so they stay permanently ready.
+      if (isCssOnlyTransition(cache)) continue;
       disposeCachedTransition(cache);
       cache.dirty = true;
       cache.cacheKey = "";
@@ -1893,7 +1916,11 @@ export function init(config: HyperShaderConfig): GsapTimeline {
     if (transitionCachePromise) return transitionCachePromise;
 
     transitionCachePromise = (async () => {
-      const work = cachedTransitions.filter((cache) => cache.dirty || !cache.ready);
+      // CSS-only transitions (prog === null) never need prewarming — they
+      // are always ready and route through applyFallbackTransition().
+      const work = cachedTransitions.filter(
+        (cache) => !isCssOnlyTransition(cache) && (cache.dirty || !cache.ready),
+      );
       const workItems = work.map((cache) => ({
         cache,
         sampleCount: sampleCountForCache(cache),
@@ -2247,9 +2274,16 @@ function initEngineMode(
     const rawH = Number(root?.getAttribute("data-height"));
     const compWidth = Number.isFinite(rawW) && rawW > 0 ? rawW : 1920;
     const compHeight = Number.isFinite(rawH) && rawH > 0 ? rawH : 1080;
+    // Page-side compositing only handles WebGL shader transitions. CSS
+    // crossfades are driven by GSAP opacity timelines elsewhere, so filter
+    // them out — passing them in would break the compositor's required
+    // `shader` field and produce a dead transition window with no rendering.
+    const shaderTransitions = transitions.filter(
+      (t): t is TransitionConfig & { shader: ShaderName } => !!t.shader,
+    );
     installPageSideCompositor({
       scenes,
-      transitions,
+      transitions: shaderTransitions,
       bgColor,
       accentColors,
       width: compWidth,
