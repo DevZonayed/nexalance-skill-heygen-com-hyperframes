@@ -183,4 +183,68 @@ describe("patchElementInHtml", () => {
     expect(result).not.toContain("srcdoc");
     expect(result).not.toContain("formaction");
   });
+
+  it("rejects on* event handlers regardless of casing", () => {
+    const result = patchElementInHtml(FIXTURE, { id: "hero" }, [
+      { type: "html-attribute", property: "onClick", value: "alert(1)" },
+      { type: "html-attribute", property: "ONERROR", value: "alert(2)" },
+      { type: "html-attribute", property: "onmouseover", value: "alert(3)" },
+    ]);
+
+    expect(result).not.toContain("alert");
+  });
+
+  it("rejects data:text/html URIs in src", () => {
+    const result = patchElementInHtml(FIXTURE, { id: "hero" }, [
+      {
+        type: "html-attribute",
+        property: "src",
+        value: "data:text/html,<script>alert(1)</script>",
+      },
+    ]);
+
+    expect(result).not.toContain("data:text/html");
+  });
+
+  it("allows safe href values", () => {
+    const result = patchElementInHtml(FIXTURE, { id: "hero" }, [
+      { type: "html-attribute", property: "href", value: "https://example.com" },
+    ]);
+
+    expect(result).toContain('href="https://example.com"');
+  });
+
+  it("rejects javascript: in href", () => {
+    const result = patchElementInHtml(FIXTURE, { id: "hero" }, [
+      { type: "html-attribute", property: "href", value: "javascript:alert(1)" },
+    ]);
+
+    expect(result).not.toContain("javascript:");
+  });
+
+  it("allows legitimate form and media attributes", () => {
+    const result = patchElementInHtml(FIXTURE, { id: "hero" }, [
+      { type: "html-attribute", property: "placeholder", value: "Enter text" },
+      { type: "html-attribute", property: "target", value: "_blank" },
+      { type: "html-attribute", property: "rel", value: "noopener" },
+      { type: "html-attribute", property: "srcset", value: "img-2x.png 2x" },
+    ]);
+
+    expect(result).toContain('placeholder="Enter text"');
+    expect(result).toContain('target="_blank"');
+    expect(result).toContain('rel="noopener"');
+    expect(result).toContain("srcset");
+  });
+
+  it("rejects unknown/dangerous attributes", () => {
+    const result = patchElementInHtml(FIXTURE, { id: "hero" }, [
+      { type: "html-attribute", property: "xmlns", value: "http://evil.com" },
+      { type: "html-attribute", property: "background", value: "http://evil.com/bg.js" },
+      { type: "html-attribute", property: "dynsrc", value: "http://evil.com/vid.avi" },
+    ]);
+
+    expect(result).not.toContain("xmlns");
+    expect(result).not.toContain("background=");
+    expect(result).not.toContain("dynsrc");
+  });
 });

@@ -67,23 +67,36 @@ export interface PatchOperation {
 }
 
 const ALLOWED_HTML_ATTRS = new Set([
+  // Identity & structure
   "id",
   "class",
   "style",
   "title",
+  "name",
+  "for",
+  "type",
+  // Internationalization
   "lang",
   "dir",
+  "translate",
+  // Interaction
   "hidden",
   "tabindex",
-  "role",
-  "slot",
-  "translate",
   "draggable",
   "contenteditable",
-  "width",
-  "height",
+  // Accessibility
+  "role",
+  "slot",
+  // Links & navigation
+  "href",
+  "target",
+  "rel",
+  // Media
   "src",
+  "srcset",
+  "sizes",
   "alt",
+  "poster",
   "loading",
   "decoding",
   "crossorigin",
@@ -92,23 +105,53 @@ const ALLOWED_HTML_ATTRS = new Set([
   "loop",
   "muted",
   "controls",
-  "poster",
   "playsinline",
+  // Layout
+  "width",
+  "height",
+  "colspan",
+  "rowspan",
+  "scope",
+  // Form
+  "placeholder",
+  "value",
+  "min",
+  "max",
+  "step",
+  "pattern",
+  "required",
+  "disabled",
+  "readonly",
+  "checked",
+  "selected",
+  "multiple",
+  "accept",
+  "maxlength",
+  "minlength",
+  "rows",
+  "cols",
+  "wrap",
 ]);
+
+const DANGEROUS_URI_SCHEMES = /^(?:javascript|vbscript):/i;
+const DANGEROUS_DATA_URI = /^data\s*:\s*text\/html/i;
 
 function isAllowedHtmlAttribute(name: string): boolean {
   const lower = name.toLowerCase();
+  if (lower.startsWith("on")) return false;
   if (ALLOWED_HTML_ATTRS.has(lower)) return true;
   if (lower.startsWith("data-")) return true;
   if (lower.startsWith("aria-")) return true;
   return false;
 }
 
+const URI_ATTRS = new Set(["src", "href", "action", "formaction", "poster", "srcset"]);
+
 function isSafeAttributeValue(name: string, value: string): boolean {
-  const lower = name.toLowerCase();
-  if (lower === "src" || lower === "href" || lower === "action" || lower === "formaction") {
-    const trimmed = value.trim().toLowerCase();
-    if (trimmed.startsWith("javascript:") || trimmed.startsWith("vbscript:")) return false;
+  if (URI_ATTRS.has(name.toLowerCase())) {
+    const trimmed = value.trim();
+    if (DANGEROUS_URI_SCHEMES.test(trimmed)) return false;
+    if (DANGEROUS_DATA_URI.test(trimmed)) return false;
   }
   return true;
 }
