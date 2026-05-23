@@ -41,17 +41,27 @@ export function killProcessTree(pid: number, signal: NodeJS.Signals = "SIGTERM")
   if (process.platform === "win32") return;
 
   const descendants = getDescendants(pid);
-  for (const child of descendants.reverse()) {
+  const allPids = [...descendants.reverse(), pid];
+
+  for (const p of allPids) {
     try {
-      process.kill(child, signal);
+      process.kill(p, signal);
     } catch {
       // Already exited.
     }
   }
-  try {
-    process.kill(pid, signal);
-  } catch {
-    // Already exited.
+
+  // Escalate to SIGKILL after a short grace period for any survivors.
+  if (signal !== "SIGKILL") {
+    setTimeout(() => {
+      for (const p of allPids) {
+        try {
+          process.kill(p, "SIGKILL");
+        } catch {
+          // Already exited.
+        }
+      }
+    }, 500).unref();
   }
 }
 
