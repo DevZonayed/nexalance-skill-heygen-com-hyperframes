@@ -330,6 +330,27 @@ describe("audio_src_not_found", () => {
     expect(finding).toBeUndefined();
   });
 
+  it("does not error for percent-encoded non-Latin filenames that exist on disk", () => {
+    const encodedFilename =
+      "%D9%87%D9%86%D8%A7%20%D9%85%D8%B1%D9%88%D8%A7%20-%20%D9%85%D8%A8%D8%A7%D8%B1%D9%83.mp4";
+    const html = `<html><body>
+  <div data-composition-id="main" data-width="1920" data-height="1080">
+    <audio id="music" src="assets/${encodedFilename}" data-start="0" data-track-index="0" data-volume="1"></audio>
+  </div>
+  <script>window.__timelines = window.__timelines || {}; window.__timelines["main"] = gsap.timeline({ paused: true });</script>
+</body></html>`;
+    const project = makeProject(html);
+    mkdirSync(join(project.dir, "assets"), { recursive: true });
+    writeFileSync(join(project.dir, "assets", decodeURIComponent(encodedFilename)), "fake");
+
+    const { results } = lintProject(project);
+
+    const first = results[0];
+    expect(first).toBeDefined();
+    const finding = first?.result.findings.find((f) => f.code === "audio_src_not_found");
+    expect(finding).toBeUndefined();
+  });
+
   it("deduplicates missing files across compositions", () => {
     const project = makeProject(validHtmlWithAudio(), {
       "captions.html": validHtmlWithAudio("captions"),

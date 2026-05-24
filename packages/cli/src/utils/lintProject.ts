@@ -113,6 +113,21 @@ function cleanAssetUrl(url: string): string {
   return url.trim().split(/[?#]/, 1)[0] ?? "";
 }
 
+function resolveLocalAssetCandidates(projectDir: string, url: string): string[] {
+  const cleanUrl = cleanAssetUrl(url);
+  const variants = [cleanUrl];
+  try {
+    const decodedUrl = decodeURIComponent(cleanUrl);
+    if (decodedUrl !== cleanUrl) variants.unshift(decodedUrl);
+  } catch {
+    // Malformed percent sequences can be literal filenames.
+  }
+
+  return [...new Set(variants)].map((variant) =>
+    variant.startsWith("/") ? resolve(projectDir, variant.slice(1)) : resolve(projectDir, variant),
+  );
+}
+
 function resolveCssAssetPath(
   projectDir: string,
   url: string,
@@ -265,8 +280,7 @@ function lintAudioSrcNotFound(
       // before serving. Mirror that rewrite here so the existence check sees
       // the same path the renderer will. Root-html srcs pass through unchanged.
       const rootRelative = compSrcPath ? rewriteAssetPath(compSrcPath, src) : src;
-      const resolved = resolve(projectDir, rootRelative);
-      if (!existsSync(resolved)) {
+      if (!resolveLocalAssetCandidates(projectDir, rootRelative).some(existsSync)) {
         missingSrcs.push(src);
       }
     }
