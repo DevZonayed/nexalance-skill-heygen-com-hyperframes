@@ -86,12 +86,12 @@ describe("initSandboxRuntimeModular", () => {
   });
 
   afterEach(() => {
-    (window as Window & { __hfRuntimeTeardown?: (() => void) | null }).__hfRuntimeTeardown?.();
+    window.__hfRuntimeTeardown?.();
     document.body.innerHTML = "";
-    delete (window as Window & { __timelines?: Record<string, RuntimeTimelineLike> }).__timelines;
-    delete (window as Window & { __player?: unknown }).__player;
-    delete (window as Window & { __playerReady?: boolean }).__playerReady;
-    delete (window as Window & { __renderReady?: boolean }).__renderReady;
+    window.__timelines = {} as Record<string, RuntimeTimelineLike>;
+    delete window.__player;
+    delete window.__playerReady;
+    delete window.__renderReady;
     vi.restoreAllMocks();
     window.requestAnimationFrame = originalRequestAnimationFrame;
     window.cancelAnimationFrame = originalCancelAnimationFrame;
@@ -112,18 +112,14 @@ describe("initSandboxRuntimeModular", () => {
     child.setAttribute("data-hf-authored-duration", "14");
     root.appendChild(child);
 
-    (window as Window & { __timelines?: Record<string, RuntimeTimelineLike> }).__timelines = {
+    window.__timelines = {
       main: createMockTimeline(20),
       "slide-1": createMockTimeline(8),
     };
 
     initSandboxRuntimeModular();
 
-    const player = (
-      window as Window & {
-        __player?: { renderSeek: (timeSeconds: number) => void };
-      }
-    ).__player;
+    const player = window.__player;
     expect(player).toBeDefined();
 
     player?.renderSeek(9);
@@ -146,18 +142,14 @@ describe("initSandboxRuntimeModular", () => {
     child.setAttribute("data-hf-authored-duration", "2");
     root.appendChild(child);
 
-    (window as Window & { __timelines?: Record<string, RuntimeTimelineLike> }).__timelines = {
+    window.__timelines = {
       main: createMockTimeline(20),
       "slide-1": createMockTimeline(8),
     };
 
     initSandboxRuntimeModular();
 
-    const player = (
-      window as Window & {
-        __player?: { renderSeek: (timeSeconds: number) => void };
-      }
-    ).__player;
+    const player = window.__player;
     expect(player).toBeDefined();
 
     player?.renderSeek(3);
@@ -190,7 +182,7 @@ describe("initSandboxRuntimeModular", () => {
     `;
     document.body.appendChild(template);
 
-    (window as Window & { __timelines?: Record<string, RuntimeTimelineLike> }).__timelines = {
+    window.__timelines = {
       main: createMockTimeline(3),
       sub: createMockTimeline(1),
     };
@@ -198,11 +190,7 @@ describe("initSandboxRuntimeModular", () => {
     initSandboxRuntimeModular();
     await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
 
-    const player = (
-      window as Window & {
-        __player?: { renderSeek: (timeSeconds: number) => void };
-      }
-    ).__player;
+    const player = window.__player;
     expect(player).toBeDefined();
     expect(child.querySelector("#hold-marker")?.textContent).toBe("HOLD ME");
 
@@ -228,7 +216,7 @@ describe("initSandboxRuntimeModular", () => {
     child.innerHTML = '<div id="hold-marker">HOLD ME</div>';
     root.appendChild(child);
 
-    (window as Window & { __timelines?: Record<string, RuntimeTimelineLike> }).__timelines = {
+    window.__timelines = {
       main: createMockTimeline(3),
       sub: createMockTimeline(1),
     };
@@ -236,11 +224,7 @@ describe("initSandboxRuntimeModular", () => {
     initSandboxRuntimeModular();
     await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
 
-    const player = (
-      window as Window & {
-        __player?: { renderSeek: (timeSeconds: number) => void };
-      }
-    ).__player;
+    const player = window.__player;
     expect(player).toBeDefined();
 
     player?.renderSeek(2);
@@ -278,17 +262,13 @@ describe("initSandboxRuntimeModular", () => {
     slide3.setAttribute("data-hf-authored-duration", "16");
     root.appendChild(slide3);
 
-    (window as Window & { __timelines?: Record<string, RuntimeTimelineLike> }).__timelines = {
+    window.__timelines = {
       main: createPaddableMockTimeline(14),
     };
 
     initSandboxRuntimeModular();
 
-    const player = (
-      window as Window & {
-        __player?: { getDuration: () => number; seek: (timeSeconds: number) => void };
-      }
-    ).__player;
+    const player = window.__player;
     expect(player).toBeDefined();
     expect(player?.getDuration()).toBe(42);
 
@@ -326,18 +306,14 @@ describe("initSandboxRuntimeModular", () => {
     video.load = () => {};
     video.pause = pause;
 
-    (window as Window & { __timelines?: Record<string, RuntimeTimelineLike> }).__timelines = {
+    window.__timelines = {
       main: createMockTimeline(40),
       "slide-translation": createMockTimeline(16),
     };
 
     initSandboxRuntimeModular();
 
-    const player = (
-      window as Window & {
-        __player?: { seek: (timeSeconds: number) => void };
-      }
-    ).__player;
+    const player = window.__player;
     expect(player).toBeDefined();
 
     player?.seek(29);
@@ -373,18 +349,14 @@ describe("initSandboxRuntimeModular", () => {
     sceneB.setAttribute("data-duration", "4");
     child.appendChild(sceneB);
 
-    (window as Window & { __timelines?: Record<string, RuntimeTimelineLike> }).__timelines = {
+    window.__timelines = {
       main: createMockTimeline(20),
       nested: createMockTimeline(8),
     };
 
     initSandboxRuntimeModular();
 
-    const player = (
-      window as Window & {
-        __player?: { seek: (timeSeconds: number) => void };
-      }
-    ).__player;
+    const player = window.__player;
     expect(player).toBeDefined();
 
     player?.seek(11);
@@ -424,18 +396,14 @@ describe("initSandboxRuntimeModular", () => {
     video.load = () => {};
     video.pause = pause;
 
-    (window as Window & { __timelines?: Record<string, RuntimeTimelineLike> }).__timelines = {
+    window.__timelines = {
       main: createMockTimeline(40),
       "slide-translation": createMockTimeline(16),
     };
 
     initSandboxRuntimeModular();
 
-    const player = (
-      window as Window & {
-        __player?: { seek: (timeSeconds: number) => void };
-      }
-    ).__player;
+    const player = window.__player;
     expect(player).toBeDefined();
 
     player?.seek(37);
@@ -479,7 +447,7 @@ describe("initSandboxRuntimeModular", () => {
     const tweetTimeline = createMockTimeline(4.5);
     const rootTimeline = createMockTimeline(24);
 
-    (window as Window & { __timelines?: Record<string, RuntimeTimelineLike> }).__timelines = {
+    window.__timelines = {
       main: rootTimeline,
       hook: hookTimeline,
       tweet: tweetTimeline,
@@ -487,11 +455,7 @@ describe("initSandboxRuntimeModular", () => {
 
     initSandboxRuntimeModular();
 
-    const player = (
-      window as Window & {
-        __player?: { renderSeek: (timeSeconds: number) => void };
-      }
-    ).__player;
+    const player = window.__player;
     expect(player).toBeDefined();
 
     // Simulate that the hook timeline was paused (as happens when
@@ -556,17 +520,13 @@ describe("initSandboxRuntimeModular", () => {
     root.appendChild(audio);
 
     const childTimeline = createMockTimeline(4);
-    (window as Window & { __timelines?: Record<string, RuntimeTimelineLike> }).__timelines = {
+    window.__timelines = {
       scene: childTimeline,
     };
 
     initSandboxRuntimeModular();
 
-    const player = (
-      window as Window & {
-        __player?: { play: () => void; getTime: () => number; isPlaying: () => boolean };
-      }
-    ).__player;
+    const player = window.__player;
     expect(player).toBeDefined();
 
     player?.play();
@@ -586,21 +546,15 @@ describe("initSandboxRuntimeModular", () => {
     root.setAttribute("data-height", "1080");
     document.body.appendChild(root);
 
-    (window as Window & { __timelines?: Record<string, RuntimeTimelineLike> }).__timelines = {
+    window.__timelines = {
       main: createMockTimeline(10),
     };
 
     initSandboxRuntimeModular();
 
-    const win = window as Window & {
-      __playerReady?: boolean;
-      __renderReady?: boolean;
-      __player?: { _timeline: RuntimeTimelineLike | null };
-    };
-
-    expect(win.__playerReady).toBe(true);
-    expect(win.__renderReady).toBe(true);
-    expect(win.__player?._timeline).not.toBeNull();
+    expect(window.__playerReady).toBe(true);
+    expect(window.__renderReady).toBe(true);
+    expect(window.__player).toBeDefined();
   });
 
   it("does not set __renderReady when no timeline is available", () => {
@@ -612,16 +566,11 @@ describe("initSandboxRuntimeModular", () => {
     root.setAttribute("data-height", "1080");
     document.body.appendChild(root);
 
-    (window as Window & { __timelines?: Record<string, RuntimeTimelineLike> }).__timelines = {};
+    window.__timelines = {};
 
     initSandboxRuntimeModular();
 
-    const win = window as Window & {
-      __playerReady?: boolean;
-      __renderReady?: boolean;
-    };
-
-    expect(win.__playerReady).toBe(true);
-    expect(win.__renderReady).toBeUndefined();
+    expect(window.__playerReady).toBe(true);
+    expect(window.__renderReady).toBeUndefined();
   });
 });

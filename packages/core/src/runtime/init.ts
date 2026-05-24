@@ -28,17 +28,14 @@ const AUTHORED_END_ATTR = "data-hf-authored-end";
 
 export function initSandboxRuntimeModular(): void {
   const state = createRuntimeState();
-  const runtimeWindow = window as Window & {
-    __hfRuntimeTeardown?: (() => void) | null;
-  };
   let runtimeErrorListener: ((event: ErrorEvent) => void) | null = null;
   let runtimeUnhandledRejectionListener: ((event: PromiseRejectionEvent) => void) | null = null;
   const runtimeCleanupCallbacks: Array<() => void> = [];
   const postedDiagnosticKeys = new Set<string>();
   let rootStageDiagnosticRafId: number | null = null;
-  if (typeof runtimeWindow.__hfRuntimeTeardown === "function") {
+  if (typeof window.__hfRuntimeTeardown === "function") {
     try {
-      runtimeWindow.__hfRuntimeTeardown();
+      window.__hfRuntimeTeardown();
     } catch (err) {
       // keep runtime resilient across reinits
       swallow("runtime.init.site1", err);
@@ -1464,7 +1461,7 @@ export function initSandboxRuntimeModular(): void {
         externalCompositionsReady = true;
         bindRootTimelineIfAvailable();
         if (state.capturedTimeline) {
-          (window as Window & { __renderReady?: boolean }).__renderReady = true;
+          window.__renderReady = true;
         }
         runAdapters("discover", state.currentTime);
         bindMediaMetadataListeners();
@@ -1546,7 +1543,7 @@ export function initSandboxRuntimeModular(): void {
   });
 
   window.__player = createPlayerApiCompat(player);
-  (window as Window & { __playerReady?: boolean }).__playerReady = true;
+  window.__playerReady = true;
 
   // Wire analytics event emission through the bridge
   initRuntimeAnalytics(postRuntimeMessage as (payload: unknown) => void);
@@ -1639,7 +1636,7 @@ export function initSandboxRuntimeModular(): void {
   // __renderReady = timeline is bound, safe for deterministic seeking.
   // fileServer.ts sets this immediately (no timeline to bind in its runtime).
   if (state.capturedTimeline) {
-    (window as Window & { __renderReady?: boolean }).__renderReady = true;
+    window.__renderReady = true;
   }
 
   // When the bundler inlines compositions, data-composition-src is removed so
@@ -1654,7 +1651,7 @@ export function initSandboxRuntimeModular(): void {
       }
       runAdapters("discover", state.currentTime);
       if (state.capturedTimeline) {
-        (window as Window & { __renderReady?: boolean }).__renderReady = true;
+        window.__renderReady = true;
       }
       postTimeline();
       postState(true);
@@ -2169,11 +2166,11 @@ export function initSandboxRuntimeModular(): void {
     }
     state.injectedCompScripts = [];
     state.capturedTimeline = null;
-    if (runtimeWindow.__hfRuntimeTeardown === teardown) {
-      runtimeWindow.__hfRuntimeTeardown = null;
+    if (window.__hfRuntimeTeardown === teardown) {
+      window.__hfRuntimeTeardown = null;
     }
   };
-  runtimeWindow.__hfRuntimeTeardown = teardown;
+  window.__hfRuntimeTeardown = teardown;
   state.beforeUnloadHandler = teardown;
   window.addEventListener("beforeunload", state.beforeUnloadHandler);
 }
