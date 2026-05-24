@@ -504,7 +504,6 @@ export function buildChromeArgs(
     "--disable-setuid-sandbox",
     "--disable-dev-shm-usage",
     CANVAS_DRAW_ELEMENT_FEATURE_FLAG,
-    WEBGPU_FLAG,
     "--enable-webgl",
     "--ignore-gpu-blocklist",
     ...getBrowserGpuArgs(browserGpuMode, platform),
@@ -537,6 +536,10 @@ export function buildChromeArgs(
     // Disable features that add overhead
     "--disable-features=AudioServiceOutOfProcess,IsolateOrigins,site-per-process,Translate,BackForwardCache,IntensiveWakeUpThrottling",
   ];
+
+  if (browserGpuMode !== "software") {
+    chromeArgs.push(WEBGPU_FLAG);
+  }
 
   // BeginFrame flags — only when using chrome-headless-shell on Linux
   if (options.captureMode !== "screenshot") {
